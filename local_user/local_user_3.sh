@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is tested in Debian 9
+
+
 # Display the UID and username of the user executing this script.
 # Display if the user is the vagrant user or not.
 

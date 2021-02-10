@@ -1,4 +1,7 @@
 #!/bin/bash 
+
+# This script is tested in Debian 9
+
 # The above line is Shebang telling the interpreter which is used here i.e. bash.
 
 # We can have Shebang as /bin/python for interpreting python programs or /bin/ruby for interpreting ruby programs
