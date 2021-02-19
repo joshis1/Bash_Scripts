@@ -1,6 +1,12 @@
 # To bring up the 3 machines.
 
+# vagrant init jasonc/centos7
+
+# In my case, I already have vagrant file.
+
 # vagrant up  - this will bring up all the 3 machines.
+
+# vagrant status
 
 # vagrant ssh admin01
 
