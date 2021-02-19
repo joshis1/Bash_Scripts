@@ -1,4 +1,6 @@
-# To bring up the 3 machines.
+# Using vagrant to run virtual machines.
+
+- To bring up the 3 machines.
 
 - vagrant init jasonc/centos7
 
