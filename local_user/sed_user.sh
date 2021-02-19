@@ -129,7 +129,8 @@ echo 'using address i.e. line 2'
 sed '2 s/apache/httpd/' config
 
 # Only on the line starting with Group
-echo 'Only on the line starting with group'
+echo 'Only on the line having the word group'
+# 'Basically using regular expression we are specifying that we want to change apache to httpd only on the line having the word Group'
 sed '/Group/ s/apache/httpd/' config
 
 
