@@ -15,7 +15,7 @@ test_find_time() {
 	echo 'find test starting'
 	TIMEFORMAT='%3lR'
         exec 3>&1 4>&2
-        var=$( { time find / -type f > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+        var=$( { time find /etc -type f > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
         echo $var
         min=$(echo $var | awk -F 'm|s' '{print $1}')
         secs=$(echo $var | awk -F 'm|s' '{print $2}')
@@ -26,7 +26,7 @@ test_find_time() {
         echo $mins
         $(( total_time = mins + secs ))
         echo $total_time
-        total_files=$(find / -type f | wc -l)
+        total_files=$(find /etc -type f | wc -l)
         echo 'Total files = '$total_files
         echo 'Total time in secs = '$total_time 
         ((time = total_time/total_files))
