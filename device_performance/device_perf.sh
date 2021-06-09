@@ -61,6 +61,9 @@ fi
 #### Test starting here ############
 
 
+## All the test time will be measured in seconds
+echo "Test results time will be captured in seconds only"
+
 ########################################
 
 
@@ -135,7 +138,7 @@ test_tftp_time() {
     ubi_img_size=$(du -h ubi.img)
     ubi_img_size_only=$(echo $ubi_img_size | head -n1 | cut -d " " -f1)
     echo $'ubi img size downloaded = ' $ubi_img_size_only
-    echo $'Total time to download ubi.img from TFTP Server = ' $total_time
+    echo $'Total time in seconds to download ubi.img from TFTP Server = ' $total_time
     echo 'tftp test stopped'
 }
 
