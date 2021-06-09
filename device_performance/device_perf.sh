@@ -31,9 +31,9 @@ if [ -f test1 ]; then
    file_exists=1
    #echo "test file exists."
    test_size=$(du test1)
-   echo $test_size
+   #echo $test_size
    test_file_size=$(echo $test_size | head -n1 | cut -d " " -f1)
-   echo $test_file_size
+   #echo $test_file_size
    if [ $test_file_size -le 300 ]; then
 	    file_exists=0
    fi
