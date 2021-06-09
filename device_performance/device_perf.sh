@@ -34,7 +34,7 @@ if [ -f test1 ]; then
    echo $test_size
    test_file_size=$(echo $test_size | head -n1 | cut -d " " -f1)
    echo $test_file_size
-   if [ $test_file_size -le 1024 ]; then
+   if [ $test_file_size -le 300 ]; then
 	    file_exists=0
    fi
 fi
@@ -44,7 +44,7 @@ if [ $file_exists -eq 0 ]; then
     cat /etc/host.conf > test1
     cat /etc/host.conf > test
     size=0
-    while [ $size -le  1024 ]
+    while [ $size -le  300 ]
     do
       size_total=$(du test1)
       size_val=$(echo $size_total | head -n1 | cut -d " " -f1)
@@ -115,11 +115,15 @@ test_tftp_time() {
 	echo 'tftp test starting'
 	TIMEFORMAT='%3lR'
     exec 3>&1 4>&2
-    var=$( { time  tftp -g -r ubi.img 11.11.11.1  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
-    #echo $var
+    var=$( { time  tftp -g -r ubi.img  11.11.11.1 > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    echo 'var'
+    echo $var
+    echo "Var is done"
     min=$(echo $var | awk -F 'm|s' '{print $1}')
     secs=$(echo $var | awk -F 'm|s' '{print $2}')
+    echo 'min'
     echo $min
+    echo 'secs'
     echo $secs
 	mins=$( awk "BEGIN {print ($min * 60)}" )
     #mins=$(( min * 60 ))
