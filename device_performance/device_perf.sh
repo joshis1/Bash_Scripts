@@ -12,6 +12,29 @@ then
       exit 1
 fi
 
+
+usage()
+{
+   echo "Usage: ${0} fw_version ip_address" >&2
+   exit 1
+}
+
+# Check if the required arguments are passed in or not.
+args=${#}
+echo 'number of args'
+echo $args
+
+if [[ ${#} -ne 2 ]]
+then 
+	usage
+else 
+    fw_version=${1}
+	ip_address=${2}
+	#echo 'entered else'
+	echo $fw_version
+	echo $ip_address 
+fi
+
 # We need to do floating point maths, unfortunately bash doesn't have built-in floating point support
 # We are using awk for floating point operations like seconds in 0.068 addition
 # We need to set Locale to C type so that awk can do floating point operations.
@@ -58,11 +81,38 @@ fi
 
 ### Test data preparation done 
 
+### Keep a global data so that we can use this value to finally write the values in csv file.
+### Add here when you add a new test case.
+
+dd_results='N/A'
+find_results='N/A'
+tftp_results='N/A'
+
+
+
+#### Result File creation 
+
+create_result_file() {
+    ## Create with a clean slate. delete the existing csv file.
+	if [ -f $fw_version.csv ]; then
+		rm -f $fw_version.csv
+	fi
+	printf "fw_version,dd_test,find_test,tftp_test\n" >> $fw_version.csv
+	printf "$fw_version,$dd_results,$find_results,$tftp_results\n" >> $fw_version.csv
+}
+
+send_result_file() {
+   # Send the result file to tftp server
+   return $(tftp -p -r $fw_version.csv  $ip_address) 
+}
+
+cleanup_test() {
+  rm -f *.csv
+  #rm -f test1
+}
+
 #### Test starting here ############
 
-
-## All the test time will be measured in seconds
-echo "Test results time will be captured in seconds only"
 
 ########################################
 
@@ -92,12 +142,12 @@ test_find_time() {
     secs=$(echo $var | awk -F 'm|s' '{print $2}')
     #echo $min
     #echo $secs
-    mins=$(( min * 60 ))
+    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
     #echo "print minutes"
     #echo $mins
     #echo 'print seconds'
     #echo $secs
-    total_time=$( awk "BEGIN {print ($mins + $secs)}" )
+    total_time=$( awk "BEGIN {print ($mins_to_secs + $secs)}" )
     #echo 'total time is '
     #echo $total_time
     total_files=$(find / -type f | wc -l)
@@ -162,7 +212,10 @@ case "$1" in
                 echo $"Let's run all the tests" $'\n'
                 test_file_disk_dump   
                 test_find_time
-                test_tftp_time				
+                test_tftp_time	
+                create_result_file
+                send_result_file
+                cleanup_test				
 		;;
 esac
 
