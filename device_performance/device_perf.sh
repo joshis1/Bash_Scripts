@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script will get instrumented data for performance measurement.
-
+# Author - Shreyas Joshi
 
 # Check if the script is running as root or not.
 # We need this because we need to run find on the root file system.
@@ -19,11 +19,15 @@ usage()
    exit 1
 }
 
-# Check if the required arguments are passed in or not.
-args=${#}
-echo 'number of args'
-echo $args
 
+####### default values ################## 
+
+ip_address=11.11.11.1
+
+#########################################
+
+
+# Check if the required arguments are passed in or not.
 if [[ ${#} -ne 2 ]]
 then 
 	usage
@@ -31,8 +35,8 @@ else
     fw_version=${1}
 	ip_address=${2}
 	#echo 'entered else'
-	echo $fw_version
-	echo $ip_address 
+	echo $'firmware version = fw_version'
+	echo $'tftp ip address = ip_address' 
 fi
 
 # We need to do floating point maths, unfortunately bash doesn't have built-in floating point support
@@ -71,11 +75,10 @@ if [ $file_exists -eq 0 ]; then
     do
       size_total=$(du test1)
       size_val=$(echo $size_total | head -n1 | cut -d " " -f1)
-      #echo $y
+	  #echo $size_val
       size=$size_val   
       cat test /etc/host.conf >> test1
       file_exists=1
-      #b=$(( $b + 1 ))
     done 
 fi
 
@@ -136,12 +139,10 @@ test_find_time() {
     echo 'find test starting'
     TIMEFORMAT='%3lR'
     exec 3>&1 4>&2
-    var=$( { time find / -type f > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
-    #echo $var
-    min=$(echo $var | awk -F 'm|s' '{print $1}')
-    secs=$(echo $var | awk -F 'm|s' '{print $2}')
-    #echo $min
-    #echo $secs
+    time_val=$( { time find / -type f > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    #echo $time_val
+    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
+    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
     mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
     #echo "print minutes"
     #echo $mins
@@ -168,22 +169,18 @@ test_tftp_time() {
     echo 'tftp test starting'
     TIMEFORMAT='%3lR'
     exec 3>&1 4>&2
-    var=$( { time  tftp -g -r ubi.img  11.11.11.1 > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
-    #echo 'var'
-    #echo $var
-    #echo "Var is done"
-    min=$(echo $var | awk -F 'm|s' '{print $1}')
-    secs=$(echo $var | awk -F 'm|s' '{print $2}')
+    time_val=$( { time  tftp -g -r ubi.img  $ip_address > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    #echo 'time_val'
+    #echo $time_val
+    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
+    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
     #echo 'min'
     #echo $min
     #echo 'secs'
     #echo $secs
-    mins=$( awk "BEGIN {print ($min * 60)}" )
-    #mins=$(( min * 60 ))
-    #echo "print minutes"
-    #echo $mins
-    #echo 'print seconds'
-    #echo $secs
+    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
+    #echo "print minutes to seconds"
+    #echo $mins_to_secs
     total_time=$( awk "BEGIN {print ($mins + $secs)}" )
     ubi_img_size=$(du -h ubi.img)
     ubi_img_size_only=$(echo $ubi_img_size | head -n1 | cut -d " " -f1)
