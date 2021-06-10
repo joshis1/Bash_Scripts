@@ -129,6 +129,7 @@ test_file_disk_dump() {
    time=$(echo -n $results | cut -d ',' -f 2)
    echo $'Total time in seconds to file disk dump in secs = ' $time
    echo $'file disk dump test stopped \n'
+   time=$(echo -n $time | cut -d ' ' -f 1)
    dd_results=$time
 }
 
