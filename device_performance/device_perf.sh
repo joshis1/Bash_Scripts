@@ -35,8 +35,8 @@ else
     fw_version=${1}
 	ip_address=${2}
 	#echo 'entered else'
-	echo $'firmware version = fw_version'
-	echo $'tftp ip address = ip_address' 
+	echo "firmware version = $fw_version"
+	echo  "tftp ip address = $ip_address"
 fi
 
 # We need to do floating point maths, unfortunately bash doesn't have built-in floating point support
