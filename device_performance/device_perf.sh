@@ -129,6 +129,7 @@ test_file_disk_dump() {
    time=$(echo -n $results | cut -d ',' -f 2)
    echo $'Total time in seconds to file disk dump in secs = ' $time
    echo $'file disk dump test stopped \n'
+   dd_results=$time
 }
 
 
@@ -157,6 +158,7 @@ test_find_time() {
     time=$( awk "BEGIN {print ($total_time/$total_files)}")
     echo $'Time to access each file average in seconds = ' $time
     echo 'find test stopped'
+	find_results=$time
 }
 
 
@@ -187,6 +189,7 @@ test_tftp_time() {
     echo $'ubi img size downloaded = ' $ubi_img_size_only
     echo $'Total time in seconds to download ubi.img from TFTP Server = ' $total_time
     echo 'tftp test stopped'
+	tftp_results=$total_time
 }
 
 ##################################
