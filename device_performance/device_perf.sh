@@ -124,7 +124,7 @@ cleanup_test() {
 
 ## usage -- result2=$(run_time_cmd ${cmd})
 ## to do not working
-run_time_cmd(cmd) {
+run_time_cmd() {
     TIMEFORMAT='%3lR'
     exec 3>&1 4>&2
 	#echo "running cmd = $cmd"
