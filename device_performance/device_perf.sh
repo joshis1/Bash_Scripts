@@ -122,6 +122,31 @@ cleanup_test() {
 
 ########################################
 
+## usage -- result2=$(run_time_cmd ${cmd})
+## to do not working
+run_time_cmd(cmd) {
+    TIMEFORMAT='%3lR'
+    exec 3>&1 4>&2
+	#echo "running cmd = $cmd"
+    time_val=$( { time $cmd  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
+    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
+    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
+    #echo "print minutes"
+    #echo $mins
+    #echo 'print seconds'
+    #echo $secs
+    total_time=$( awk "BEGIN {print ($mins_to_secs + $secs)}" )
+    #echo 'total time is '
+    #echo $total_time
+    total_files=$(find / -type f | wc -l)
+    #echo 'Total files = '$total_files
+    #echo 'Total time in secs = '$total_time 
+    time=$( awk "BEGIN {print ($total_time/$total_files)}")
+    #echo $'Time to access each file average in seconds = ' $time
+    #echo 'find test stopped'
+	echo $time
+}
 
 ### dd test -- check disk dump copy from RAM to RAM 
 
@@ -214,7 +239,12 @@ case "$1" in
                 echo "Usage: $0 {dd|find|tftp}"
                 echo ""
 				echo "In case you want to run all the tests"
-				arg_checs
+				#arg_checs  -> for some reason this doesn't work ?? to do
+				if [[ ${#} -ne 2 ]]
+					then 
+				usage
+				exit 1
+				fi 
                 echo $"Let's run all the tests" $'\n'
                 test_file_disk_dump   
                 test_find_time
