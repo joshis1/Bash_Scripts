@@ -245,6 +245,8 @@ case "$1" in
 				usage
 				exit 1
 				fi 
+				fw_version=${1}
+		        ip_address=${2}
                 echo $"Let's run all the tests" $'\n'
                 test_file_disk_dump   
                 test_find_time
