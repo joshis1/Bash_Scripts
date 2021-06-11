@@ -26,18 +26,21 @@ ip_address=11.11.11.1
 
 #########################################
 
-
 # Check if the required arguments are passed in or not.
-if [[ ${#} -ne 2 ]]
-then 
-	usage
-else 
-    fw_version=${1}
-	ip_address=${2}
-	#echo 'entered else'
-	echo "firmware version = $fw_version"
-	echo  "tftp ip address = $ip_address"
-fi
+arg_checs()
+{
+	if [[ ${#} -ne 2 ]]
+	then 
+		usage
+		exit 1
+	else 
+		fw_version=${1}
+		ip_address=${2}
+		#echo 'entered else'
+		echo "firmware version = $fw_version"
+		echo  "tftp ip address = $ip_address"
+	fi
+}
 
 # We need to do floating point maths, unfortunately bash doesn't have built-in floating point support
 # We are using awk for floating point operations like seconds in 0.068 addition
@@ -210,6 +213,8 @@ case "$1" in
         *)
                 echo "Usage: $0 {dd|find|tftp}"
                 echo ""
+				echo "In case you want to run all the tests"
+				arg_checs
                 echo $"Let's run all the tests" $'\n'
                 test_file_disk_dump   
                 test_find_time
