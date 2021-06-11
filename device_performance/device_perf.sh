@@ -28,20 +28,16 @@ ip_address=11.11.11.1
 
 
 # Check if the required arguments are passed in or not.
-arg_checs()
-{
-	if [[ ${#} -ne 2 ]]
-	then 
-		usage
-		exit 1
-	else 
-		fw_version=${1}
-		ip_address=${2}
-		#echo 'entered else'
-		echo "firmware version = $fw_version"
-		echo  "tftp ip address = $ip_address"
+if [[ ${#} -ne 2 ]]
+then 
+	usage
+else 
+    fw_version=${1}
+	ip_address=${2}
+	#echo 'entered else'
+	echo "firmware version = $fw_version"
+	echo  "tftp ip address = $ip_address"
 fi
-}
 
 # We need to do floating point maths, unfortunately bash doesn't have built-in floating point support
 # We are using awk for floating point operations like seconds in 0.068 addition
@@ -123,30 +119,6 @@ cleanup_test() {
 
 ########################################
 
-run_time_cmd(cmd) {
-    TIMEFORMAT='%3lR'
-    exec 3>&1 4>&2
-	#echo "running cmd = $cmd"
-    time_val=$( { time $cmd  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
-    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
-    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
-    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
-    #echo "print minutes"
-    #echo $mins
-    #echo 'print seconds'
-    #echo $secs
-    total_time=$( awk "BEGIN {print ($mins_to_secs + $secs)}" )
-    #echo 'total time is '
-    #echo $total_time
-    total_files=$(find / -type f | wc -l)
-    #echo 'Total files = '$total_files
-    #echo 'Total time in secs = '$total_time 
-    time=$( awk "BEGIN {print ($total_time/$total_files)}")
-    #echo $'Time to access each file average in seconds = ' $time
-    #echo 'find test stopped'
-	return $time
-}
-
 
 ### dd test -- check disk dump copy from RAM to RAM 
 
@@ -167,10 +139,27 @@ test_file_disk_dump() {
 #####################################################
 test_find_time() {
     echo 'find test starting'
-	total_time = run_time_cmd('find / -type f > /dev/null ')
-    echo $'Time to access each file average in seconds = ' $total_time
+    TIMEFORMAT='%3lR'
+    exec 3>&1 4>&2
+    time_val=$( { time find / -type f > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    #echo $time_val
+    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
+    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
+    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
+    #echo "print minutes"
+    #echo $mins
+    #echo 'print seconds'
+    #echo $secs
+    total_time=$( awk "BEGIN {print ($mins_to_secs + $secs)}" )
+    #echo 'total time is '
+    #echo $total_time
+    total_files=$(find / -type f | wc -l)
+    #echo 'Total files = '$total_files
+    #echo 'Total time in secs = '$total_time 
+    time=$( awk "BEGIN {print ($total_time/$total_files)}")
+    echo $'Time to access each file average in seconds = ' $time
     echo 'find test stopped'
-	find_results=$total_time
+	find_results=$time
 }
 
 
@@ -181,7 +170,21 @@ test_find_time() {
 #####################################################
 test_tftp_time() {
     echo 'tftp test starting'
-	total_time = run_time_cmd('tftp -g -r ubi.img  $ip_address > /dev/null ')
+    TIMEFORMAT='%3lR'
+    exec 3>&1 4>&2
+    time_val=$( { time  tftp -g -r ubi.img  $ip_address > /dev/null  2>&1;  1>&3- 2>&4-; } 2>&1 )  # Captures time only.
+    #echo 'time_val'
+    #echo $time_val
+    min=$(echo $time_val | awk -F 'm|s' '{print $1}')
+    secs=$(echo $time_val | awk -F 'm|s' '{print $2}')
+    #echo 'min'
+    #echo $min
+    #echo 'secs'
+    #echo $secs
+    mins_to_secs=$( awk "BEGIN {print ($min * 60)}" )
+    #echo "print minutes to seconds"
+    #echo $mins_to_secs
+    total_time=$( awk "BEGIN {print ($mins + $secs)}" )
     ubi_img_size=$(du -h ubi.img)
     ubi_img_size_only=$(echo $ubi_img_size | head -n1 | cut -d " " -f1)
     echo $'ubi img size downloaded = ' $ubi_img_size_only
@@ -207,8 +210,6 @@ case "$1" in
         *)
                 echo "Usage: $0 {dd|find|tftp}"
                 echo ""
-				echo "In case you want to run all the tests"
-				arg_checs
                 echo $"Let's run all the tests" $'\n'
                 test_file_disk_dump   
                 test_find_time
